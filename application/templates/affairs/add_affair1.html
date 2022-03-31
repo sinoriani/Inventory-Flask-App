@@ -1,0 +1,365 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock head %}
+
+{% block content %}
+
+<form action="" method="POST" class="ml-3 pb-3 shadowed2" autocomplete="off"
+    style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    {{ form.hidden_tag() }}
+    <div class="mb-4 p-3 d-flex justify-content-start" style="border-bottom: 1px solid rgba(177, 177, 177, 0.616);">
+        <div>
+            <legend class="ml-2 pt-2" style="font-weight: 100; ">{{LANG[lang].get(title,title)}}</legend>
+
+        </div>
+
+
+        <!-- <button type="submit" style="width: 180px;" class=" rounded-border btn stripe-indigo-bg text-white ">Add product</button> -->
+    </div>
+    <div class="p-3 m-auto w-60-lg ">
+
+        <div class="row ">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    {{ form.name.label }}
+                    {% if form.name.errors %}
+                    {{ form.name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.name(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3 ">
+                <div class="form-group">
+                    {{ form.status.label }}
+                    {% if form.status.data != 'Done' %}
+                    {% if form.status.errors %}
+                    {{ form.status(id="typeSelect",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.status.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.status(id="typeSelect",placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                    {% else %}
+                    <input type="text" class="rounded-border form-control form-control-lg " value="Done" disabled>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4 ">
+
+                <div class="form-group">
+                    {{ form.close_date.label }}
+                    {% if form.close_date.errors %}
+                    {{ form.close_date(style="width:200px;",placeholder="",class="dtpick rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.close_date.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.close_date(style="width:200px;",placeholder="",class="dtpick rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    {{ form.responsible_user.label }}
+                    {% if form.responsible_user.errors %}
+                    {{ form.responsible_user(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.responsible_user.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.responsible_user(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group" id="probabilityInput">
+                    {{ form.probability.label }}
+                    {% if form.probability.errors %}
+                    {{ form.probability(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.probability.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.probability(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group  ">
+                    {{ form.amount.label }}
+                    {% if form.amount.errors %}
+                    <div class="form-inline">
+                        {{ form.amount(style="width:80%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <label type="text" style="padding: 10px; ">DT</label>
+                        <div class="invalid-feedback">
+                            {% for error in form.amount.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-inline">
+                        {{ form.amount(style="width:80%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                        <label type="text" style="padding: 10px; ">DT</label>
+
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    {{ form.description.label }}
+                    {% if form.description.errors %}
+                    {{ form.description(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.description(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group" id="barcodeInput">
+                    {{ form.origin.label }}
+                    {% if form.origin.errors %}
+                    {{ form.origin(style="width:100%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.origin.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.origin(style="width:100%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group  ">
+                    {{ form.company.label }}
+                    {% if form.company.errors %}
+                    <div class="form-inline">
+                        {{ form.company(id="companySelect",style="width:100%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-inline">
+                        {{ form.company(id="companySelect",style="width:100%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+           {% if dbname == "chelli" and type_ == "Sale" %}
+            <div class="col-lg-4">
+                <div class="form-group  ">
+                    {{ form.matricule.label }}
+                    {% if form.matricule.errors %}
+                    <div class="form-inline">
+                        {{ form.matricule(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.matricule.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-inline">
+                        {{ form.matricule(placeholder="",class="rounded-border form-control form-control-lg") }}
+
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class=" col-lg-2 pt-5">
+                <div class="form-group ">
+                    <input type="checkbox" name="invoiced" id="" {% if title == 'Edit Affair' and invoiced %} checked {% endif %}> 
+                    <label for="invoiced">{{LANG[lang].get('Invoiced','Invoiced')}}</label>
+                </div>
+
+            </div>
+        </div>
+        {% if title != 'Edit Affair' %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group" style="list-style-type: none;">
+
+                    <label for="prods">{{LANG[lang].get('Products','Products')}}</label>
+                    <ul id="productsCheckbox" style="height:180px; overflow-y:scroll;list-style-type: none;"
+                        class="rounded-border form-control form-control-lg" id="">
+
+                        </li>
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if type_ == "Sale" %}
+        <div class="pl-2 ">
+            Total : <span id="total">0 DT</span>
+        </div>
+        {% endif %}
+
+
+    </div>
+    <div class=" w-100 d-flex justify-content-end">
+
+        <button type="submit" style="width: 180px; margin: 0 20px;"
+            class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get(title,title)}}</button>
+    </div>
+</form>
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+    $(function () {
+        $(".dtpick").datepicker();
+    });
+</script>
+{% if title != "Edit Affair" %}
+<script>
+
+
+
+
+    $("#productsCheckbox").children().each(function () {
+        let id = $(this).children()[0].id.split('-')[1]
+        let input = $(document.createElement('input')).attr({
+            id: 'quantity-' + id,
+            name: 'quantity',
+            value: 0,
+            class: 'quantityInput',
+            type: 'number',
+            style: 'width:70px; margin-left:5px;'
+        })
+        $(this).append(input)
+    })
+
+
+
+
+    var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    })
+
+    var type_ = "{{ type_ | safe }}"
+    var added_to_list = false
+
+    function getData(companySelect) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "{{ url_for('inventory.get_products_for_company') }}",
+            data: JSON.stringify({
+                "company_id": type_ == "Purchase" ? companySelect.val() : undefined
+            }),
+            success: function (data) {
+                if( type_ == "Sale" && added_to_list)
+                    return
+
+                $('#productsCheckbox').empty()
+                for (d of data) {
+                    let li = $(document.createElement('li'));
+                    let label = $(document.createElement('label')).css('margin-left', '4px').attr('for', 'products_' + d[0]).html(d[1])
+                    $(label).addClass("price" + d[2] + "%")
+                    let input = $(document.createElement('input')).attr({
+                        id: 'products_' + d[0],
+                        name: 'products',
+                        value: d[0],
+                        type: 'hidden'
+                    })
+                    $(li).append(input);
+                    $(li).append(label);
+                    $('#productsCheckbox').append(li);
+
+                }
+                $("#productsCheckbox").children().each(function () {
+                    let id = $(this).children()[0].id.split('_')[1]
+                    let input = $(document.createElement('input')).attr({
+                        id: 'quantity_' + id,
+                        name: 'quantity',
+                        value: 0,
+                        class: 'quantityInput',
+                        type: 'number',
+                        style: 'width:70px; margin-left:5px;',
+                        step:"0.01"
+                    })
+                    $(this).prepend(input)
+                })
+                $(".quantityInput").change(function () {
+                    let quantity = $(this).val()
+                    let children = $(this).parent().children()
+                    let product_id = $(children[1]).val().split('_')[0]
+                    $(this).parent().children().val(product_id.toString() + '_' + quantity.toString())
+                    $(this).val(quantity)
+
+                    //update the total amount div
+                    if (type_ == "Sale") {
+                        var sum = 0
+                        $(".quantityInput").each(function () {
+                            let q = $(this).val()
+                            let product = $(($(this).parent().children())[2]).attr("class")
+                            let regex = /price(.*)%/
+                            let price = product.match(regex)[1]
+                            sum += q * parseFloat(price)
+                        })
+                        $("#total").text(sum + " DT")
+
+                    }
+                })
+                added_to_list=true
+            },
+            contentType: "application/json; charset=utf-8"
+        });
+    }
+
+    getData($("#companySelect"))
+
+    $("#companySelect").change(function () {
+        getData($(this))
+    })
+
+</script>
+{% endif %}
+{% endblock scripts %}

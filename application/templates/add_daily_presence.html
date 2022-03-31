@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+
+<form action="" method="POST" class="ml-3 pb-3 shadowed2" autocomplete="off"
+    style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="mb-4 p-3 d-flex justify-content-start" style="border-bottom: 1px solid rgba(177, 177, 177, 0.616);">
+        <div>
+            <legend class="ml-2 pt-2" style="font-weight: 100; ">{{LANG[lang].get(title,title)}}</legend>
+
+        </div>
+       
+    </div>
+    <div class="p-4">
+        <div class="form-group">
+            <label style="font-size: 1.2em;" for="date">{{LANG[lang].get("Date","Date")}} </label>
+            <input type="date" name="date" id="" style="width: 140px;">
+        </div>
+        <h4 class="text-center">
+            {{dat}}
+        </h4>
+        <table class=" text-center table table-striped table-bordered">
+            <thead>
+                <tr class=" text-white " style="background-color: #343A40;" >
+                    <th>{{LANG[lang].get("Name","Name")}}</th>
+                    <th>{{LANG[lang].get("In","In")}}</th>
+                    <th>{{LANG[lang].get("Out","Out")}}</th>
+                    <th>{{LANG[lang].get("Day off","Day off")}}</th>
+                </tr>
+                
+            </thead>
+            <!-- add presence page -->
+            {% if users %}
+            <tbody>
+                {% for u in users %}
+                <tr >
+                    <td >{{u.name}}</td>
+                    <td>
+                        <input type="number" class="{{u.id}}" name="{{u.id}}-clock_in_hour" style="width: 40px;" min="0" max="23" id="">
+                        :
+                        <input type="number" class="{{u.id}}" name="{{u.id}}-clock_in_minute" style="width: 40px;" min="0" max="59" id="">
+        
+                    </td>
+                    <td>
+                        <input type="number" class="{{u.id}}" name="{{u.id}}-clock_out_hour" style="width: 40px;" min="0" max="23" id="">
+                        :
+                        <input type="number" class="{{u.id}}" name="{{u.id}}-clock_out_minute" style="width: 40px;" min="0" max="59" id="">
+                    </td>
+                    <td>
+                        <input type="checkbox" id="{{u.id}}" name="{{u.id}}-vacation" id="">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% else %}
+            <!-- presenec history page -->
+            <tbody>
+                {% for name,values in history.items() %}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td>{{ values['clock_in'] if values['clock_in'] }}  </td>
+                    <td>{{ values['clock_out'] if values['clock_out']  }}  </td>
+                    <td>{% if not values['clock_in'] %} <i class="fas fa-check"></i> {% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            {% endif %}
+
+        </table>
+        
+    </div>
+    <div class=" w-100 d-flex justify-content-end">
+
+        <button type="submit" style="width: 180px; margin: 0 20px;"
+            class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get("Confirm","Confirm")}}</button>
+    </div>
+</form>
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+    $(function () {
+        $(".dtpick").datepicker();
+    });
+
+    $("input:checkbox").change(function(){
+        let uid = $(this).attr("id");
+        if(this.checked){
+            $("."+uid).attr('disabled', 'disabled');
+        }else{
+            $("."+uid).removeAttr('disabled');
+        }
+    })
+</script>
+
+{% endblock scripts %}

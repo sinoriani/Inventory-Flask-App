@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+
+
+
+{% block content %}
+<div class="row ml-3  mr-2 mb-4 shadowed2" style=" background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <div class="col-lg-6 pl-0 pr-0 pb-0 border-right">
+        <h4 class="text-center border-bottom mb-0 pt-3 p-2 pb-3 " style="background-color: #5969E2; color: white; border-radius: 5px 0 0 0 ;" >{{LANG[lang].get("My Tasks","My Tasks")}}</h4>
+        {% if tasks %}
+        <div class="d-flex flex-column  pt-2 pb-2" style="height: 450px; overflow: scroll;  background-color: #eef0f8;">
+            <p class="mb-1 p-1 ">Total {{ stats['nb_tasks'] }} {{LANG[lang].get("tasks where","tasks where")}} <span
+                    class="text-danger">{{ stats['nb_late_tasks'] }} {{LANG[lang].get("are late","are late")}}</span></p>
+            {% for t  in tasks %}
+            <div class="p-2 mb-1 d-flex ">
+                <div style="min-width: 170px;">
+                    {% if t.status != 'Done' and t.due_date < current_date + timedelta(days=2) %}
+                    {% set due_date_color = 'bg-danger text-white' %}
+                    {% elif t.status != 'Done' and  t.due_date <= current_date + timedelta(days=4) %}
+                    {% set due_date_color = 'orange text-white' %}
+
+                    {% endif %}
+                    <a href="{{ url_for('tasks.task',tid=t.id) }}">
+                        <span style="padding: 3px 5px; margin: 10px 2px 10px 10px; border-radius: 5px;"
+                            class="{{due_date_color}}">{{t.due_date_pretty}}</span>
+                        {% if t.due_hour %}
+                        <span style="padding: 3px 5px; margin: 10px 10px 10px 2px; border-radius: 5px;"
+                            class="{{due_date_color}}">{{t.due_hour}}</span>
+                        {% endif %}
+                    </a>
+
+                </div>
+
+               
+
+                <div style="min-width: 200px;">
+                    {% if t.priority == 'High' %}
+                    {% set priorityColor = 'text-danger'  %}
+                    {% elif   t.priority == 'Medium' %}
+                    {% set priorityColor = 'text-warning'  %}
+                    {% else  %}
+                    {% set priorityColor = 'text-success'  %}
+                    {% endif %}
+
+                    <span class="{{priorityColor}}"><i class="mr-2 fas fa-flag"></i> </span>{{t.name}}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+
+    <div class="col-lg-6  pl-0 pr-0 pb-0 border-right">
+        <h4 class="text-center border-bottom mb-0 pt-3 p-2 pb-3 " style="background-color: #5969E2; color: white; border-radius: 0 6px 0 0 ;">{{LANG[lang].get("My Affairs","My Affairs")}}</h4>
+        {% if affairs %}
+        <div class="d-flex flex-column pt-2 " style="height: 450px; overflow: scroll; background-color: #eef0f8;">
+            <p class="mb-1 p-1 ">Total {{ stats['nb_affairs'] }} {{LANG[lang].get("affairs","affairs")}} </p>
+            {% for a  in affairs %}
+            <div class="p-2 mb-1 d-flex ">
+                <div style="min-width: 115px; " >
+                    {% if a.type == 'Sale' %}
+                    {% set typeColor = 'text-success'  %}
+                    {% else %}
+                    {% set typeColor = 'text-info'  %}
+                    {% endif %}
+                    <a href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                        <a style="padding: 3px 5px; margin: 10px 0px 10px 10px; border-radius: 5px;" class="{{typeColor}}"
+                            href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {{LANG[lang].get(a.type,a.type)}}
+                            {% if a.type == 'Sale' %}
+                            <i class="ml-2 fas fa-share"></i>
+                            {% else %}
+                            <i class="ml-2 fas fa-reply"></i>
+                            {% endif %}
+                        </a>
+                    </a>
+
+                </div>
+                <div style="min-width: 110px;">
+                    {% if a.status == 'Waiting' %}
+                    {% set statusColor = 'text-white warning-color'  %}
+                    {% elif a.status == 'In Progress' %}
+                    {% set statusColor = 'text-white info-color'  %}
+                    {% else %}
+                    {% set statusColor = 'text-white success-color'  %}
+                    {% endif %}
+                    <a style="padding: 5px {% if a.status == 'In Progress' %} 7px {% else %} 20px {% endif %}; width: 100px; margin: 10px 10px; border-radius: 5px;" class="{{statusColor}}"
+                        href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                        {{LANG[lang].get(a.status,a.status)}}
+                    </a>
+                </div>
+                <div style="min-width: 200px;">
+
+
+                    {{a.name}}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock content %}
+
+
+{% block scripts %}
+
+{% endblock scripts %}

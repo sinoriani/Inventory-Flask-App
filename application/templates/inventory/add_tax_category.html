@@ -1,0 +1,54 @@
+
+{% extends "layout.html" %}
+
+
+{% block content %}
+<form action="" method="POST" class="ml-3 pb-3 shadowed2" style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    {{ form.hidden_tag() }}
+    <div class="mb-4 p-3 d-flex justify-content-between" style="border-bottom: 1px solid rgba(177, 177, 177, 0.616);">
+        <legend class="ml-2 pt-2" style="font-weight: 100; " >{{LANG[lang].get(title,title)}}</legend>
+        <!-- <button type="submit" style="width: 180px;" class=" rounded-border btn stripe-indigo-bg text-white ">Add product</button> -->
+    </div>
+    <div class="p-3 m-auto w-60-lg " >
+        <div class="ml-3 form-group">
+            {{ form.name.label }}
+            {% if form.name.errors %}
+            {{ form.name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.name.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.name(placeholder="",class="rounded-border form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+        <div class="ml-3 form-group">
+            {{ form.value.label }}
+            {% if form.value.errors %}
+            {{ form.value(style="width:100px",class="rounded-border form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.value.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.value(style="width:100px",class="rounded-border form-control form-control-lg") }}
+            {% endif %}
+        </div>
+
+       
+        
+    </div>
+    <div class=" w-100 d-flex justify-content-end">
+
+        <button type="submit" style="width: 180px; margin: 0 20px;" class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get("Confirm","Confirm")}}</button>
+    </div>
+</form>
+{% endblock content %}
+
+
+{% block scripts %}
+
+{% endblock scripts %}

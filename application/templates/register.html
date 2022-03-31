@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class=" ml-3 pb-3 mr-3 shadowed2" style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <form method="POST" action="" >
+        {{ form.hidden_tag() }}
+        <legend class="pt-3 pl-3 pb-3 mb-2 border-bottom">
+          Add User
+
+        </legend>
+        <fieldset class="p-4 form-group">
+            <div class="form-group">
+                {{ form.username.label(class="form-control-label") }}
+                {% if form.username.errors %}
+                {{ form.username(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.username(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                {{ form.email(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.email(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.role.label(class="form-control-label") }}
+                {% if form.role.errors %}
+                {{ form.role(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.role.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.role(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+
+           
+
+            <div class="form-group">
+                {{ form.name.label(class="form-control-label") }}
+                {% if form.name.errors %}
+                {{ form.name(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.name(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.surname.label(class="form-control-label") }}
+                {% if form.surname.errors %}
+                {{ form.surname(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.surname.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.surname(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.password.label(class="form-control-label") }}
+                {% if form.password.errors %}
+                {{ form.password(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.password(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            
+            
+            <div class="form-group">
+                {{ form.tel1.label(class="form-control-label") }}
+                {% if form.tel1.errors %}
+                {{ form.tel1(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.tel1.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.tel1(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.tel2.label(class="form-control-label") }}
+                {% if form.tel2.errors %}
+                {{ form.tel2(class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.tel2.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.tel2(class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-marine") }}
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

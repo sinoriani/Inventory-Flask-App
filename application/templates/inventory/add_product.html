@@ -1,0 +1,211 @@
+
+{% extends "layout.html" %}
+
+
+{% block content %}
+<form action="" method="POST" class="ml-3 pb-3 shadowed2" style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    {{ form.hidden_tag() }}
+    <div class="mb-4 p-3 d-flex justify-content-between" style="border-bottom: 1px solid rgba(177, 177, 177, 0.616);">
+        <legend class="ml-2 pt-2" style="font-weight: 100; " >{{LANG[lang].get(title,title)}}</legend>
+        <!-- <button type="submit" style="width: 180px;" class=" rounded-border btn stripe-indigo-bg text-white ">Add product</button> -->
+    </div>
+    <div class="p-3 m-auto w-60-lg " >
+        <div class="row ">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    {{ form.name.label }}
+                    {% if form.name.errors %}
+                    {{ form.name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.name(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    {{ form.unit.label }}
+                    {% if form.unit.errors %}
+                    {{ form.unit(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.unit.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.unit(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3 ">
+                <div class="form-group">
+                    {{ form.type_.label }}
+                    {% if form.type_.errors %}
+                    {{ form.type_(id="typeSelect",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.type_.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.type_(id="typeSelect",placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4 ">
+                
+                <div class="form-group">
+                    {{ form.tax_category.label }}
+                    {% if form.tax_category.errors %}
+                    {{ form.tax_category(style="width:200px;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.tax_category.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.tax_category(style="width:200px;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    {{ form.family.label }}
+                    {% if form.family.errors %}
+                    {{ form.family(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.family.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.family(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group" id="locationInput">
+                    {{ form.location.label }}
+                    {% if form.location.errors %}
+                    {{ form.location(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.location.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.location(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group  ">
+                    {{ form.price.label }}
+                    {% if form.price.errors %}
+                    <div class="form-inline">
+                        {{ form.price(style="width:80%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <label type="text" style="padding: 10px; ">DT</label>
+                        <div class="invalid-feedback">
+                            {% for error in form.price.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-inline">
+                        {{ form.price(style="width:80%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                        <label type="text" style="padding: 10px; ">DT</label>
+
+                    </div>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    {{ form.description.label }}
+                    {% if form.description.errors %}
+                    {{ form.description(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.description(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group" id="barcodeInput">
+                    {{ form.ean_upc.label }}
+                    {% if form.ean_upc.errors %}
+                    {{ form.ean_upc(style="width:100%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.ean_upc.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.ean_upc(style="width:100%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group  ">
+                    {{ form.estimated_cost.label }}
+                    {% if form.estimated_cost.errors %}
+                    <div class="form-inline">
+                        {{ form.estimated_cost(style="width:80%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <label type="text" style="padding: 10px; ">DT</label>
+                        <div class="invalid-feedback">
+                            {% for error in form.estimated_cost.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-inline">
+                        {{ form.estimated_cost(style="width:80%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                        <label type="text" style="padding: 10px; ">DT</label>
+
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+
+        
+    </div>
+    <div class=" w-100 d-flex justify-content-end">
+
+        <button type="submit" style="width: 180px; margin: 0 20px;" class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get(title,title)}}</button>
+    </div>
+</form>
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+    $("#typeSelect").change(function(){
+        let val = $(this).val();
+        if(val == 'Service'){
+            $("#locationInput").hide();
+            $("#barcodeInput").hide();
+        }else{
+            $("#locationInput").show();
+            $("#barcodeInput").show();
+        }
+    })
+</script>
+{% endblock scripts %}

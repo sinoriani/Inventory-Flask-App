@@ -1,0 +1,224 @@
+{% extends "layout.html" %}
+
+
+
+
+{% block content %}
+<div class=" ml-2 shadowed2" style="background-color: #F8FAFD; border-radius: 5px;">
+    <div class="p-2  mb-0 border-bottom">
+        <h2 class="">{{product.name}} <span class="text-muted">({{product.family if product.family != "None" else "-"}})</span></h2>
+        {% if product.type == "Product" %}
+        <h4 class="text-muted">{{LANG[lang].get("SKU","SKU")}} : {{ product.sku }} /  {{LANG[lang].get("Barcode","Barcode")}} : {{ product.ean_upc }}</h4>
+        {% endif %}
+        <a class="btn btn-sm btn-primary" href="{{ url_for('inventory.edit_product',pid=product.id) }}">
+            {{LANG[lang].get("Edit","Edit")}}
+        </a>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between p-2 border-bottom"
+        style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Price","Price")}}</span> <br>
+            <span class="indigo-text">{{product.price}} DT</span>
+        </div>
+
+        <div class="history-chart">
+            <canvas id="price-lineChart"></canvas>
+        </div>
+    </div>
+
+    {% if product.type == "Product" %}
+    <div class="d-flex flex-wrap justify-content-between p-2 border-bottom"
+        style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Quantity","Quantity")}}</span> <br>
+            <span class="indigo-text">{{product.quantity }} {{product.unity }}</span>
+        </div>
+
+        <div class="history-chart">
+            <canvas id="quantity-lineChart"></canvas>
+        </div>
+    </div>
+
+    <div class="p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pb-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Location","Location")}}</span> <br>
+            <span class="indigo-text">{{product.location if product.location else "-"}}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pb-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Description","Descripton")}}</span> <br>
+            <span class="indigo-text">{{product.description}}</span>
+        </div>
+    </div>
+
+    <div class="p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pb-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Sellers","Companies")}}</span> 
+            <button id="addcompanyBtn" class="btn btn-sm btn-grey">+</button> <br>
+            <form id="addcompanyForm" method="POST" style="display: none;" action="{{ url_for('inventory.link_company_to_product',product_id=product.id)}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                <select id="addcompanieselect" class="form-group" name="company_id" >
+                    {% for company in all_companies %}
+                    <option value="{{  company.id }}">{{ company.name }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-md btn-primary" >{{LANG[lang].get("Add","Add")}}</button>
+
+            </form>
+            <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+                <!--Table head-->
+                <thead>
+                    <tr  class="stylish-color-dark text-white " > 
+                        <th >{{LANG[lang].get("Company name","Company name")}} <i class="ml-2 fas fa-signature"></i></th>
+
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+                    {% for s in product.companies %}
+                    <tr>
+                        
+        
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.company',sid=s.id) }}">{{s.name}}</a>
+                        </td>
+                       
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <!--Table body-->
+            </table>
+        </div>
+    </div>
+    
+
+   
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    
+    $('#addcompanyBtn').click(function(e){
+        $('#addcompanyForm').show();
+        $(this).hide()
+    })
+
+    $("#addcompanyForm").submit(function(e){
+        if(  $("#addcompanieselect").val() == null){
+            e.preventDefault()
+
+        }
+    })
+
+
+    //price chart
+    price_history = []
+    {% for h in product.price_history %}
+    price_history.push(
+        {{ h | safe}}
+    )
+    {% endfor %}
+    price_date_labels = []
+    prices = []
+    for(h of price_history){
+        price_date_labels.push(h.date)
+        prices.push(h.price)
+    }
+    
+
+    quantity_history = []
+    quantities = []
+    {% for h in product.quantity_history %}
+    quantity_history.push(
+        {{ h | safe}}
+    )
+    {% endfor %}
+    quantity_date_labels = []
+    quantites = []
+    for(h of quantity_history){
+        quantity_date_labels.push(h.date)
+        quantites.push(h.quantity)
+    }
+    console.log(quantity_date_labels,quantities)
+
+
+    var ctxL = document.getElementById("price-lineChart").getContext('2d');
+    var priceLineChart = new Chart(ctxL, {
+        type: 'line',
+        data: {
+            labels: price_date_labels,
+            datasets: [{
+                label: "Prices",
+                data: prices,
+                backgroundColor: [
+                    'rgba(168, 193, 255, .4)',
+                ],
+                borderColor: [
+                    'rgba(68, 29, 209, .7)',
+                ],
+                borderWidth: 3
+            }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                
+                yAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            },
+            legend: {
+                display: false
+            }
+        }
+    });
+
+    {% if  product.type == "Product" %}
+    var ctxL1 = document.getElementById("quantity-lineChart").getContext('2d');
+    var quantityLineChart = new Chart(ctxL1, {
+        type: 'line',
+        data: {
+            labels: quantity_date_labels,
+            datasets: [{
+                label: "Quantities",
+                data: quantites,
+                backgroundColor: [
+                    'rgba(168, 193, 255, .4)',
+                ],
+                borderColor: [
+                    'rgba(68, 29, 209, .7)',
+                ],
+                borderWidth: 3
+            }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                
+                yAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }]
+            },
+            legend: {
+                display: false
+            }
+        }
+    });
+    {% endif %}
+</script>
+{% endblock scripts %}

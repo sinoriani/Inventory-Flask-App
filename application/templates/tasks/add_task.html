@@ -1,0 +1,141 @@
+
+{% extends "layout.html" %}
+
+
+{% block content %}
+<form action="" autocomplete="off" method="POST" class="ml-3 pb-3 shadowed2" style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    {{ form.hidden_tag() }}
+    <div class="mb-4 p-3 d-flex justify-content-between" style="border-bottom: 1px solid rgba(177, 177, 177, 0.616);">
+        <legend class="ml-2 pt-2" style="font-weight: 100; " >{{LANG[lang].get(title,title)}} </legend>
+        <!-- <button type="submit" style="width: 180px;" class=" rounded-border btn stripe-indigo-bg text-white ">Add product</button> -->
+    </div>
+    <div class="p-3 m-auto w-60-lg " >
+        <div class="row ">
+            <div class="col-lg-8 ">
+                <div class="form-group">
+                    {{ form.name.label }}
+                    {% if form.name.errors %}
+                    {{ form.name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.name(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4 ">
+                
+                <div class="form-group">
+                    {{ form.assigned_user.label }}
+                    {% if form.assigned_user.errors %}
+                    {{ form.assigned_user(style="width:200px;",placeholder="",class=" rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.assigned_user.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.assigned_user(style="width:200px;",placeholder="",class=" rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="form-group">
+                    {{ form.priority.label }}
+                    {% if form.priority.errors %}
+                    {{ form.priority(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.priority.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.priority(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    {{ form.due_date.label }}
+                    {% if form.due_date.errors %}
+                    {{ form.due_date(placeholder="",class="dtpick rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.due_date.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.due_date( placeholder="",class="dtpick rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group  ">
+                    {{ form.due_hour.label }}
+                    {% if form.due_hour.errors %}
+                    <div class="form-inline">
+                        {{ form.due_hour(style="width:45%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <span style="padding: 0 5px;" >:</span>
+                        {{ form.due_minute(style="width:45%;",placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.due_hour.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-inline">
+                        {{ form.due_hour(style="width:45%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                        <span style="padding: 0 5px;" >:</span>
+                        {{ form.due_minute(style="width:45%;",placeholder="",class="rounded-border form-control form-control-lg") }}
+                       
+
+                    </div>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    {{ form.description.label }}
+                    {% if form.description.errors %}
+                    {{ form.description(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.description.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ form.description(placeholder="",class="rounded-border form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+        
+
+        
+    </div>
+    <div class=" w-100 d-flex justify-content-end">
+
+        <button type="submit" style="width: 180px; margin: 0 20px;" class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get("Confirm","Confirm")}}</button>
+    </div>
+</form>
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+    $(function () {
+        $(".dtpick").datepicker();
+    });
+</script>
+{% endblock %}

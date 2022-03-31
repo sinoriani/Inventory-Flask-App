@@ -1,0 +1,398 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<!-- MDBootstrap Datatables  -->
+<link href="{{url_for('static',filename='css/addons/datatables2.min.css')}}" rel="stylesheet">
+{% endblock head %}
+
+
+
+{% block content %}
+<div class=" ml-2 shadowed2" style="background-color: #F8FAFD; border-radius: 5px;">
+    <div class="p-2  mb-0 border-bottom">
+        <h2 class="">{{company.name}} </h2>
+        <div class="text-muted" >{{company.matricule }}</div> 
+    </div>
+    <span style="font-size: 1.4em;" class="mt-2 ml-2">{{LANG[lang].get("Contacts","Contacts")}} </span>
+
+    <button id="addContactBtn" class="btn btn-sm btn-grey">+</button> <br>
+    <form id="addContactForm" action="" method="POST" class="p-2 border-bottom" style="display: none; background-color: #eef0f8;"">
+        <div class="ml-2 p-0 row">
+            {{ contactForm.hidden_tag() }}
+
+            <div class="col-lg-3 pl-2 form-group">
+                {{ contactForm.contact_name.label }}
+                {% if contactForm.contact_name.errors %}
+                {{ contactForm.contact_name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in contactForm.contact_name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ contactForm.contact_name(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class=" col-lg-3  form-group">
+                {{ contactForm.contact_surname.label }}
+                {% if contactForm.contact_surname.errors %}
+                {{ contactForm.contact_surname(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in contactForm.contact_surname.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ contactForm.contact_surname(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class=" col-lg-3  form-group">
+                {{ contactForm.contact_email.label }}
+                {% if contactForm.contact_email.errors %}
+                {{ contactForm.contact_email(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in contactForm.contact_email.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ contactForm.contact_email(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class=" col-lg-3  form-group">
+                {{ contactForm.contact_phone.label }}
+                {% if contactForm.contact_phone.errors %}
+                {{ contactForm.contact_phone(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in contactForm.contact_phone.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ contactForm.contact_phone(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class=" ">
+
+                <button type="submit" style="max-width: 180px; margin: 0 20px;"
+                    class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get("Add","Add")}}</button>
+            </div>
+        </div>
+
+    </form>
+
+
+    {% for contact in company.contacts %}
+    <div class="d-flex flex-wrap justify-content-between p-2 border-bottom"
+        style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3">
+            <button type="button" class="btn bg-danger btn-sm p-2 m-0 mr-2 text-white" data-toggle="modal"
+                data-target="#deleteModal-{{ contact.id }}">X</button>
+            <span class="text-muted" style="font-size: 1.2em;">{{contact.name + ' ' + contact.surname}}</span> <br>
+            <span class="indigo-text">{{contact.email}} </span> <br>
+            {% for number  in contact.numsTel %}
+            <span class="indigo-text">{{number}} </span>
+            <br>
+            
+                <!-- Modal -->
+                <div class="modal fade" id="deleteModal-{{ contact.id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">
+                                    {{LANG[lang].get("Delete","Delete")}}?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">{{LANG[lang].get("Cancel","Cancel")}}</button>
+                                <form
+                                    action="{{ url_for('inventory.remove_contact_from_company',company_id=company.id,  contact_id=contact.id) }}"
+                                    method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input class="btn btn-danger" type="submit"
+                                        value="{{LANG[lang].get('Delete','Delete')}}">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pb-2 pl-3">
+
+            
+            <span class="text-muted" style="font-size: 1.4em;">{{LANG[lang].get("Products","Products")}}
+                ({{LANG[lang].get("Seller","Seller")}}) </span>
+            <button id="addProductBtn" class="btn btn-sm btn-grey">+</button> <br>
+            <form id="addProductForm" method="POST" style="display: none;"
+                action="{{ url_for('inventory.link_product_to_company',company_id=company.id)}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                <select id="addProductSelect" class="form-group" name="product_id">
+                    {% for product in all_products %}
+                    <option value="{{  product.id }}">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-md btn-primary">{{LANG[lang].get("Add","Add")}}</button>
+
+            </form>
+
+            {% if company.products != [] %}
+            <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+                <!--Table head-->
+                <thead>
+                    <tr class="stylish-color-dark text-white ">
+                        <th>#</th>
+                        <th>{{LANG[lang].get("Name","Name")}}</th>
+                        <th>{{LANG[lang].get("Type","Type")}}</th>
+                        <th>{{LANG[lang].get("Description","Description")}}</th>
+                        <th>{{LANG[lang].get("In stock","In stock")}}</th>
+                        <th>{{LANG[lang].get("Price/Unit","Price/Unit")}}</th>
+                        <th>{{LANG[lang].get("Estimated cost","Estimated cost")}}</th>
+                        <th>{{LANG[lang].get("Category","Category")}}</th>
+                        <th>{{LANG[lang].get("Tax cat.","Tax cat.")}}</th>
+                        <th>{{LANG[lang].get("SKU","SKU")}}</th>
+                        <th>{{LANG[lang].get("Location","Location")}}</th>
+
+                        <th>{{LANG[lang].get("Barcode","Barcode")}}</th>
+
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+                    {% for p in company.products %}
+                    <tr>
+                        <th class="">
+                            <a href="{{ url_for('inventory.product',pid=p.id) }}">
+                                {{p.id}}
+                            </a>
+                        </th>
+
+
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.name}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;"
+                                href="{{ url_for('inventory.product',pid=p.id) }}">{{ p.type }}</a>
+                        </td>
+                        <td class="p-0" style="text-overflow: ellipsis; white-space: nowrap;">
+                            <a style="padding: 15px; "
+                                href="{{ url_for('inventory.product',pid=p.id) }}">{{p.description}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">
+                                {{p.quantity}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> {{p.price}}
+                                DT</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;"
+                                href="{{ url_for('inventory.product',pid=p.id) }}">{{p.estimated_cost}} DT</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">
+                                {{p.family}}</a>
+                        </td>
+
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">
+                                {{p.tax_category}}</a>
+                        </td>
+                        <td class="p-0 ">
+                            <a style="padding: 15px 5px; "
+                                href="{{ url_for('inventory.product',pid=p.id) }}">{{p.sku}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">
+                                {{p.location}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">
+                                {{p.ean_upc}}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <!--Table body-->
+            </table>
+            <!--Table-->
+            {% endif %}
+
+
+
+
+        </div>
+    </div>
+
+    <!-- Remarks -->
+    <div class=" p-2 pl-4 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Remarks","Remarks")}} </div>
+        <form action="{{ url_for('inventory.update_company_remarks',company_id=company.id)}}" method="POST" class="row ">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-lg-9 ml-3 form-group">
+                <textarea type="text" name="remarks" id="" class="rounded-border form-control form-control-lg"> {{company.remarks}} </textarea>
+            </div>
+            <div class=" col-lg-2">
+
+                <button type="submit" style="max-width: 180px; margin: 0 20px;"
+                    class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get("Update","Update")}}</button>
+            </div>
+        </form>
+
+
+      
+    </div>
+
+    <div class=" p-2 pl-4 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Affairs","Affairs")}} </div>
+        <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+            <!--Table head-->
+            <thead>
+                <tr  class="stylish-color-dark text-white " > 
+                    <th>{{LANG[lang].get("Name","Name")}} <i class="ml-2 fas fa-signature"></i></th>
+                    <th >{{LANG[lang].get("Type","Type")}} <i class="ml-2 fas fa-hand-holding-usd"></i></th>
+                    <th>{{LANG[lang].get("Company","Company")}} <i class="ml-2 fas fa-building"></i></th>
+                    <th>{{LANG[lang].get("Status","Status")}} <i class="ml-2 fas fa-compass"></i></th>
+                    <th>{{LANG[lang].get("Description","Description")}} <i class="ml-2 fas fa-file-alt"></i></th>
+                    <th>{{LANG[lang].get("Amount","Amount")}} <i class="ml-2 fas fa-coins"></i></th>
+                    <th>{{LANG[lang].get("Close dat","Close dat")}}. <i class="ml-2 fas fa-calendar-alt"></i></th>
+                    <th>{{LANG[lang].get("Proba","Proba")}}. <i class="ml-2 fas fa-percent"></i></th>
+                    <th>{{LANG[lang].get("Agent","Agent")}} <i class="ml-2 fas fa-user"></i></th>
+                    <th >{{LANG[lang].get("Origin","Origin")}}<i class="ml-2 fas fa-thumbtack"></i></th>
+    
+                </tr>
+            </thead>
+            <!--Table head-->
+            <!--Table body-->
+            <tbody>
+                {% for a in company.affairs %}
+                <tr>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{a.name}}</a>
+                    </td>
+                    <td class="p-0">
+                        {% if a.type == 'Sale' %}
+                        {% set typeColor = 'text-success'  %}
+                        {% else %}
+                        {% set typeColor = 'text-info'  %}
+                        {% endif %}
+                        <a style="padding: 5px; margin: 10px 10px; border-radius: 5px;" class="{{typeColor}}" href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {{LANG[lang].get(a.type,a.type)}}
+                            {% if a.type == 'Sale' %}
+                            <i class="ml-2 fas fa-share"></i>
+                            {% else %}
+                            <i class="ml-2 fas fa-reply"></i>
+                            {% endif %}
+                        </a> 
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{ a.company.name }}</a>
+                    </td>
+                    <td class="p-0">
+                        {% if a.status == 'Waiting' %} 
+                        {% set statusColor = 'text-white warning-color'  %}
+                        {% elif a.status == 'In Progress' %}
+                        {% set statusColor = 'text-white info-color'  %}
+                        {% else %}
+                        {% set statusColor = 'text-white success-color'  %}
+                        {% endif %}
+                        <a style="padding: 5px; margin: 10px 10px; border-radius: 5px;" class="{{statusColor}}" href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{LANG[lang].get(a.status,a.status)}}</a>
+                    </td>
+                    <td class="p-0"  style="text-overflow: ellipsis; white-space: nowrap;">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}"> {{a.description}}</a>
+                    </td>
+                    
+                    <td class="p-0 text-right">
+                        <p style="padding: 15px; margin: 0px; width: 100%; " href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {% if a.amount %}
+                            {{a.amount}} DT
+                            {% endif %}    
+                        </p>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}">  {{a.close_date_pretty if a.close_date else ''}}</a>
+                    </td>
+                    
+                    <td class="p-0">
+                        {% if a.probability %}
+                            {% if a.probability >= 75 %}
+                            {% set probabilityColor = 'text-white success-color'  %}
+                            {% elif a.probability >= 50 %}
+                            {% set probabilityColor = 'text-white warning-color'  %}
+                            {% else %}
+                            {% set probabilityColor = 'text-white danger-color'  %}
+                            {% endif %}
+                            {% endif %}
+                        <p style="padding: 5px 10px; margin: 10px 10px; border-radius: 5px;" class="{{probabilityColor}} text-right" > 
+                            {% if a.probability %}
+                            {{a.probability}}%
+                            {% endif %}
+                        </p>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}"> {{a.responsible_user.name}}</a>
+                    </td>
+                    <td class="p-0 ">
+                        <a style="padding: 15px 5px; "  href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{a.origin}}</a>
+                    </td> 
+                  
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--Table body-->
+        </table>
+    </div>
+
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{{url_for('static',filename='js/addons/datatables2.min.js')}}"></script>
+
+<script>
+    // $(document).ready(function () {
+    //     $('#tablePreview').DataTable({ responsive: true });
+    //     $('.dataTables_length').addClass('bs-select');
+    // });
+
+    $('#addProductBtn').click(function (e) {
+        $('#addProductForm').show();
+        $(this).hide()
+    })
+
+    $("#addProductForm").submit(function (e) {
+        if ($("#addProductSelect").val() == null) {
+            e.preventDefault()
+
+        }
+    })
+
+    $('#addContactBtn').click(function (e) {
+        $('#addContactForm').show();
+        $(this).hide()
+    })
+    
+    $("input").each(function(){
+
+        if( $(this).attr("class") != undefined && $(this).attr("class").includes("invalid")){
+            $('#addContactForm').show();
+        }
+    })
+
+
+</script>
+{% endblock scripts %}

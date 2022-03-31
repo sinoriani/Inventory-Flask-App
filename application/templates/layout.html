@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--link rel="icon" href="{{ url_for('static',filename='images/tcs.ico') }}" type="image/x-icon"-->
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/b4d4289106.js" crossorigin="anonymous"></script>
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"> -->
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500&display=swap" rel="stylesheet">
+  <!-- Bootstrap core CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <!-- Compiled and minified CSS -->
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
+
+
+
+  <!-- <link rel="stylesheet" href="https:////cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"> -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/icons.css') }}">
+  <!-- Font Awesome -->
+  <!-- Material Design Bootstrap -->
+  {% if title %}
+  <title> {{title}}</title>
+  {% else %}
+  <title>app</title>
+  {% endif %}
+
+  {% block head %}
+  {% endblock head %}
+
+
+  {% set curr_user = current_user %}
+
+  {% if curr_user.is_authenticated %}
+  {% set lang = curr_user.lang %}
+  {% else %}
+  {% set lang = 'FR' %}
+  {% endif %}
+
+</head>
+
+
+<body class=" stripe-bg  " style="overflow-x:hidden;">
+
+
+  <header class="site-header">
+
+
+  </header>
+
+
+  <main role="main">
+    <div class="bodyBakcground"></div>
+
+    <div class="d-flex" id="wrapper">
+
+
+      <!-- Page Content -->
+      <div id="page-content-wrapper">
+        <div id="messagesContainer" style="z-index: 10;  position: absolute; left: 10%; top: 20px; width: 80%; ">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category,message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+            <a class="closeBtn">X</a>
+          </div>
+          {% endfor %}
+
+          {% endif %}
+          {% endwith %}
+        </div>
+
+        {% block nav %}
+        {% endblock nav  %}
+
+        <div class=" mainContainer row mr-0 mt-2 " style=" width: 100vw; ">
+          {% if current_user.is_authenticated %}
+          <!-- SideBar -->
+          <div class="col-lg-2 sidebar stripe-text ">
+            <div class="pl-1 mb-5" >
+                {{LANG[lang].get("Welcome","Welcome")}} {{ curr_user.username}}
+            </div>
+
+            <div class="pl-1 mb-1">
+              <a class="stripe-text" href="{{url_for('main.home')}}"><i class="fas fa-home"></i>
+                {{LANG[lang].get("Home","Home")}}</a>
+            </div>
+
+            <!-- Users -->
+            <div class="list-group list-group-flush">
+              <div id="usersHeader" class="bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-users mr-2 mt-1"></i> {{LANG[lang].get('Users','Users')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('users.register')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("User","User")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('users.users_list')}}"><i class="fas fa-list-ul"></i>
+                  {{LANG[lang].get("Users","Users")}}</a>
+              </div>
+            </div>
+
+            <!-- Inventory -->
+            <div class="list-group list-group-flush">
+              <div id="inventoryHeader" class="stripe-text bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-shopping-cart mr-2 mt-1"></i> {{LANG[lang].get('Inventory','Inventory')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('inventory.add_product')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("Product","Product")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('inventory.add_company')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("Company","Company")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('inventory.products')}}"><i class="fas fa-list-ul"></i>
+                  {{LANG[lang].get("Products","Products")}}</a>
+
+
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('inventory.companies')}}"><i class="fas fa-list-ul"></i>
+                  {{LANG[lang].get("Companies","Companies")}}</a>
+
+
+
+
+              </div>
+
+
+            </div>
+
+            <!-- Affairs -->
+            <div class="list-group list-group-flush">
+              <div id="affairsHeader" class="stripe-text bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-briefcase mr-2 mt-1"></i> {{LANG[lang].get('Affairs','Affairs')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('affairs.add_affair',type_='Sale')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("Sale","Sale")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('affairs.add_affair',type_='Purchase')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("Purchase","Purchase")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('affairs.affairs_list')}}"><i class="fas fa-list-ul"></i>
+                  {{LANG[lang].get("Affairs","Affairs")}}</a>
+              </div>
+            </div>
+
+            <!-- Tasks -->
+            <div class="list-group list-group-flush">
+              <div id="tasksHaeder" class="stripe-text bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-tasks mr-2 mt-1"></i> {{LANG[lang].get('Tasks','Tasks')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('tasks.add_task')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("Task","Task")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('tasks.tasks_list')}}"><i class="fas fa-list-ul"></i>
+                  {{LANG[lang].get("Tasks","Tasks")}}</a>
+              </div>
+            </div>
+
+            {% if 'Admin' in current_user.roles %}
+
+             <!-- reports -->
+             <div class="list-group list-group-flush">
+              <div id="tasksHaeder" class="stripe-text bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-chart-area mr-2 mt-1"></i> {{LANG[lang].get('Reports','Reports')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('main.daily_report',type_= 'daily' )}}"><i class="fas fa-calendar-day"></i>
+                  {{LANG[lang].get("Daily","Daily")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('main.daily_report',type_= 'monthly' )}}"><i class="fas fa-calendar-week"></i>
+                  {{LANG[lang].get("Monthly","Monthly")}}</a>
+              </div>
+            </div>
+
+            <!-- Presence -->
+            <div class="list-group list-group-flush">
+              <div id="paramsHeader" class="stripe-text bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-users mr-2 mt-1"></i> {{LANG[lang].get('Presence','Presence')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('users.add_presence')}}"><i class="fas fa-plus"></i>
+                  {{LANG[lang].get("Add","Add")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('users.presence_history')}}"><i class="fas fa-list-ul"></i>
+                  {{LANG[lang].get("History","History")}}</a>
+              </div>
+            </div>
+
+             <!-- Parameters -->
+             <div class="list-group list-group-flush">
+              <div id="paramsHeader" class="stripe-text bigHeader" style="height: 35px; list-style-type: none;">
+                <div style="padding:5px ;"
+                  class="collapseHeader nav-btn-item d-flex list-group-item list-group-item-action  ">
+                  <i class="fas fa-cog mr-2 mt-1"></i> {{LANG[lang].get('Parameters','Parameters')}}
+                  <i class="fas fa-angle-down ml-2 mt-1 "></i>
+                </div>
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('users.operation_roles')}}"><i class="fas fa-user-tag"></i>
+                  {{LANG[lang].get("Roles","Roles")}}</a>
+
+                <a style="display: none;  padding:5px 5px 5px 30px; "
+                  class="collapseLink  list-group-item list-group-item-action nav-btn-item stripe-text"
+                  href="{{url_for('inventory.parameters')}}"><i class="fas fa-cog"></i>
+                  {{LANG[lang].get("Parameters","Parameters")}}</a>
+              </div>
+            </div>
+            {% endif %}
+
+
+
+
+           
+
+           
+
+
+            
+
+
+          </div>
+
+          <!-- main stuff -->
+          <div class="col-lg-10 pr-0  ">
+            <div class="d-flex justify-content-end  mb-2 pt-2 pb-2">
+              <div class="dropdown ">
+                <a class=" dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true"
+                  aria-expanded="false">
+                  <div
+                    style="background-color: white; color: gray; border-radius: 50%; width: 40px; height: 40px; text-align: center; padding: 5px; font-size: 1.3em;">
+                    <i class="fas fa-user"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
+                  <a class="dropdown-item"
+                    href="{{ url_for('users.logout') }}">{{LANG[lang].get("Logout","Logout")}}</a>
+                </div>
+              </div>
+
+            </div>
+            <div>
+              <!-- <div class="shadowed2 mb-4" style=" width: 100%; height: 350px; padding: 5px; background-color: white;">
+                hello
+              </div> -->
+              {% endif %}
+              {% block content %}
+              {% endblock %}
+              {% if current_user.is_authenticated %}
+
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+
+
+      </div>
+
+
+
+      <!-- /#page-content-wrapper -->
+    </div>
+
+
+
+  </main>
+  {%  block footer %}
+  <footer class="pl-3">
+    Version 1.0.0
+  </footer>
+  {% endblock footer %}
+
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/js/mdb.min.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <!-- Compiled and minified JavaScript -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    $(".closeBtn").click(function () {
+      $(this).parent().remove()
+    })
+  </script>
+
+  <script>
+    $(".collapseHeader").click(function (e) {
+      let headerParent = $(this).parent();
+      $(".collapseLink").each(function () {
+        if ($(this).parent().attr('id') != headerParent.attr('id')) {
+          $(this).hide();
+          //$(this).css('height','0').css("padding",'0');
+        }
+
+      });
+      $(".bigHeader").css("height", '35px')
+
+      let childrenCount = 1;
+      let wasHidden = false;
+      $(this).parent().children(".collapseLink").each(function () {
+        childrenCount++;
+        if ($(this).is(":hidden")) {
+          wasHidden = true;
+        }
+        //$(this).fadeToggle(800);
+        $(this).toggle()
+
+      })
+
+      if (wasHidden) {
+        $(this).parent().css("height", 35 * childrenCount + 'px')
+      } else {
+        $(this).parent().css("height", '35px')
+      }
+    })
+  </script>
+
+
+  <!-- Function used to shrink nav bar removing paddings and adding black background -->
+
+  {% block scripts %}{% endblock %}
+</body>
+
+</html>

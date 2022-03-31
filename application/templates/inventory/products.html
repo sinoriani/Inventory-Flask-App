@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+
+{% block head %}
+<!-- MDBootstrap Datatables  -->
+<link href="{{url_for('static',filename='css/addons/datatables2.min.css')}}" rel="stylesheet">
+{% endblock head %}
+
+{% block content %}
+
+<div class="ml-3 p-2 shadowed2" style=" background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <!--Table-->
+    <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+        <!--Table head-->
+        <thead>
+            <tr class="stylish-color-dark text-white ">
+               
+
+
+                <th>{{LANG[lang].get("Name","Name")}}</th>
+                <th>{{LANG[lang].get("Type","Type")}}</th>
+                <th>{{LANG[lang].get("Description","Description")}}</th>
+                <th>{{LANG[lang].get("In stock","In stock")}}</th>
+                <th>{{LANG[lang].get("Price/Unit","Price/Unit")}}</th>
+                <th>{{LANG[lang].get("Estimated cost","Estimated cost")}}</th>
+                <th>{{LANG[lang].get("Category","Category")}}</th>
+                <th>{{LANG[lang].get("Tax cat.","Tax cat.")}}</th>
+                <th>{{LANG[lang].get("Location","Location")}}</th>
+
+                <th>{{LANG[lang].get("Barcode","Barcode")}}</th>
+            </tr>
+        </thead>
+        <!--Table head-->
+        <!--Table body-->
+        <tbody>
+            {% for p in products %}
+            <tr>
+
+
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.name}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{ p.type }}</a>
+                </td>
+                <td class="p-0" style="text-overflow: ellipsis; white-space: nowrap;">
+                    <a style="padding: 15px; " href="{{ url_for('inventory.product',pid=p.id) }}">{{p.description}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> 
+                        {{p.quantity if p.type == "Product" else ''}} {{p.unity if p.type == "Product" else ''}}
+                    </a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> {{p.price}} DT</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.estimated_cost if p.estimated_cost  else ''}}
+                        {{'DT' if p.estimated_cost  else ''}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> {{p.family}}</a>
+                </td>
+
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> {{p.tax_category}}</a>
+                </td>
+
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> {{p.location}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}"> {{p.ean_upc}}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <!--Table body-->
+    </table>
+    <!--Table-->
+</div>
+{% endblock content %}
+
+
+{% block scripts %}
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{{url_for('static',filename='js/addons/datatables2.min.js')}}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tablePreview').DataTable({ responsive: true });
+        $('.dataTables_length').addClass('bs-select');
+    });
+</script>
+{% endblock scripts %}

@@ -1,0 +1,317 @@
+{% extends "layout.html" %}
+
+
+
+{% block content %}
+<div class=" ml-3 pb-5 mr-2 mb-4 shadowed2" style=" background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <h2 class="text-center border-bottom mb-2 p-2">{{LANG[lang].get(title,title)}}</h2>
+    <div class="p-3">
+        <form action="" method="POST">
+            <span class="mb-0 mr-2 " style="font-size: 1.5em;">{{LANG[lang].get("Date","Date")}}</span>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if title == "Monthly Report" %}
+            <select name="month" id="">
+                <option value="1" {% if LANG[lang].get("January","January") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("January","January")}}</option>
+                <option value="2" {% if LANG[lang].get("February","February") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("February","February")}}</option>
+                <option value="3" {% if LANG[lang].get("March","March") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("March","March")}}</option>
+                <option value="4" {% if LANG[lang].get("April","April") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("April","April")}}</option>
+                <option value="5" {% if LANG[lang].get("May","May") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("May","May")}}</option>
+                <option value="6" {% if LANG[lang].get("June","June") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("June","June")}}</option>
+                <option value="7" {% if LANG[lang].get("July","July") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("July","July")}}</option>
+                <option value="8" {% if LANG[lang].get("August","August") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("August","August")}}</option>
+                <option value="9" {% if LANG[lang].get("September","September") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("September","September")}}</option>
+                <option value="10" {% if LANG[lang].get("October","October") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("October","October")}}</option>
+                <option value="11" {% if LANG[lang].get("November","November") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("November","November")}}</option>
+                <option value="12" {% if LANG[lang].get("December","December") in date_picked %} selected {% endif %}>
+                    {{LANG[lang].get("December","December")}}</option>
+            </select>
+            <select name="year" id="">
+                {% for y in years %}
+                <option value="{{y}}" {% if y in date_picked %} selected {% endif %}>{{ y}}</option>
+                {% endfor %}
+            </select>
+            {% elif title == "Daily Report" %}
+
+            <input type="date" style="width: 150px;" name="date" id="">
+            {% endif %}
+            <button type="submit" class="btn btn-sm btn-primary">Ok</button>
+        </form>
+    </div>
+
+    <div class="p-2 border-bottom mb-3">
+        <h4 class="text-muted text-center">{{LANG[lang].get("Affairs","Affairs")}} ({{date_picked}})</h4>
+        <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+            <!--Table head-->
+            <thead>
+                <tr class=" text-white " style="background-color: #343A40;">
+                    <th>{{LANG[lang].get("Name","Name")}} <i class="ml-2 fas fa-signature"></i></th>
+                    <th>{{LANG[lang].get("Type","Type")}} <i class="ml-2 fas fa-hand-holding-usd"></i></th>
+                    <th>{{LANG[lang].get("Company","Company")}} <i class="ml-2 fas fa-building"></i></th>
+                    <th>{{LANG[lang].get("Status","Status")}} <i class="ml-2 fas fa-user"></i></th>
+                    <th>{{LANG[lang].get("Amount","Amount")}} <i class="ml-2 fas fa-coins"></i></th>
+                    <th>{{LANG[lang].get("Agent","Agent")}} <i class="ml-2 fas fa-user"></i></th>
+                    {% if title == "Monthly Report" %}
+                    <th>{{LANG[lang].get("Date created","Date created")}} <i class="ml-2 fas fa-calendar-alt"></i></th>
+                    {% endif %}
+
+                </tr>
+            </thead>
+            <!--Table head-->
+            <!--Table body-->
+            <tbody>
+                {% for a in affairs %}
+                <tr>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{a.name}}</a>
+                    </td>
+                    <td class="p-0">
+                        {% if a.type == 'Sale' %}
+                        {% set typeColor = 'text-success'  %}
+                        {% else %}
+                        {% set typeColor = 'text-info'  %}
+                        {% endif %}
+                        <a style="padding: 5px; margin: 10px 10px; border-radius: 5px;" class="{{typeColor}}"
+                            href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {{LANG[lang].get(a.type,a.type)}}
+                            {% if a.type == 'Sale' %}
+                            <i class="ml-2 fas fa-share"></i>
+                            {% else %}
+                            <i class="ml-2 fas fa-reply"></i>
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;"
+                            href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{ a.company.name }}</a>
+                    </td>
+
+                    <td class="p-0">
+                        {% if a.status == 'Waiting' %} 
+                    {% set statusColor = 'text-white warning-color'  %}
+                    {% elif a.status == 'In Progress' %}
+                    {% set statusColor = 'text-white info-color'  %}
+                    {% else %}
+                    {% set statusColor = 'text-white success-color'  %}
+                    {% endif %}
+                    <a style="padding: 5px; margin: 10px 10px; border-radius: 5px;" class="{{statusColor}}" href="{{ url_for('affairs.affair',affair_id=a.id) }}">{{LANG[lang].get(a.status,a.status)}}</a>
+                    </td>
+
+
+
+                    <td class="p-0 ">
+                        <p style="padding: 15px; margin: 0px; width: 100%; "
+                            href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {% if a.amount %}
+                            {{a.amount}} DT
+                            {% endif %}
+                        </p>
+                    </td>
+
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {{a.responsible_user.name}}</a>
+                    </td>
+
+                    {% if title == "Monthly Report" %}
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('affairs.affair',affair_id=a.id) }}">
+                            {{a.date_created_pretty}}</a>
+                    </td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--Table body-->
+        </table>
+    </div>
+
+    <div class="row">
+        <!-- confirmed -->
+        <div class="col-lg-6">
+            <div class="p-2 ">
+                <h3  class=" text-center border-bottom"> {{LANG[lang].get("Confirmed","Confirmed")}}</h3>
+                <h4 class="text-muted text-center">{{LANG[lang].get("Checkout","Checkout")}} </h4>
+                <div class="d-flex justify-content-center">
+                    <table class="table table-bordered text-center table-striped m-0 p-0" >
+                        <thead>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("In","In")}}
+                            </th>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("Out","Out")}}
+                            </th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {{amounts['in_amount']}} DT
+                                </td>
+                                <td>
+                                    {{amounts['out_amount']}} DT
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+        
+                </div>
+        
+            </div>
+
+            <div class="p-2">
+                <h4 class="text-muted text-center">{{LANG[lang].get("Products","Products")}} </h4>
+                <div class="d-flex justify-content-center">
+                    <table class="table table-bordered text-center table-striped m-0 p-0" >
+                        <thead>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("In","In")}}
+                            </th>
+                        </thead>
+                        <tbody>
+                            {% for a in affairs %}
+                            {% if a.type == "Purchase"  and a.status == "Done" %}
+                            {% for p in a.products %}
+                            <tr>
+                                <td>
+                                    {{p.name}} ({{p.quantity}} {{p.unity}})
+                                </td>
+        
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered text-center table-striped m-0 p-0" >
+                        <thead>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("Out","Out")}}
+                            </th>
+                        </thead>
+                        <tbody>
+                            {% for a in affairs %}
+                            {% if a.type == "Sale" and a.status == "Done" %}
+                            {% for p in a.products %}
+                            <tr>
+                                <td>
+                                    {{p.name}} ({{p.quantity}} {{p.unity}})
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+        
+        
+                </div>
+        
+            </div>
+        </div>
+        <!-- previsional -->
+        <div class="col-lg-6">
+            <div class="p-2 ">
+                <h3  class="text-center border-bottom"> {{LANG[lang].get("Previsional","Previsional")}}</h3>
+                <h4 class="text-muted text-center">{{LANG[lang].get("Checkout","Checkout")}}</h4>
+                <div class="d-flex justify-content-center">
+                    <table class="table table-bordered text-center table-striped m-0 p-0">
+                        <thead>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("In","In")}}
+                            </th>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("Out","Out")}}
+                            </th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {{amounts['prevision_in_amount']}} DT
+                                </td>
+                                <td>
+                                    {{amounts['prevision_out_amount']}} DT
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+        
+                </div>
+        
+            </div>
+
+            <div class="p-2">
+                <h4 class="text-muted text-center">{{LANG[lang].get("Products","Products")}} </h4>
+                <div class="d-flex justify-content-center">
+                    <table class="table table-bordered text-center table-striped m-0 p-0" >
+                        <thead>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("In","In")}}
+                            </th>
+                        </thead>
+                        <tbody>
+                            {% for a in affairs %}
+                            {% if a.type == "Purchase"  and a.status != "Done" %}
+                            {% for p in a.products %}
+                            <tr>
+                                <td>
+                                    {{p.name}} ({{p.quantity}} {{p.unity}})
+                                </td>
+        
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered text-center table-striped m-0 p-0" >
+                        <thead>
+                            <th style="background-color: #343A40; color: white;">
+                                {{LANG[lang].get("Out","Out")}}
+                            </th>
+                        </thead>
+                        <tbody>
+                            {% for a in affairs %}
+                            {% if a.type == "Sale" and a.status != "Done" %}
+                            {% for p in a.products %}
+                            <tr>
+                                <td>
+                                    {{p.name}} ({{p.quantity}} {{p.unity}})
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+        
+        
+                </div>
+        
+            </div>
+        </div>
+    </div>
+
+  
+
+   
+
+    
+</div>
+
+{% endblock content %}
+
+
+{% block scripts %}
+
+{% endblock scripts %}

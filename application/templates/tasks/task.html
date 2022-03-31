@@ -1,0 +1,188 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<!-- MDBootstrap Datatables  -->
+<link href="{{url_for('static',filename='css/addons/datatables2.min.css')}}" rel="stylesheet">
+{% endblock head %}
+
+
+{% block content %}
+
+<div class=" ml-2 shadowed2" style="background-color: #F8FAFD; border-radius: 5px;">
+    <div class="p-2  mb-0 border-bottom">
+        <div class="d-flex flex-wrap justify-content-between">
+            <div style="min-width: 200px;">
+                {% if task.due_date < current_date + timedelta(days=2) %}
+                {% set due_date_color = 'red' %}
+                {% elif task.due_date <= current_date + timedelta(days=4) %}
+                {% set due_date_color = 'orange' %}
+                {% else %}
+                {% set due_date_color = 'green' %}
+                {% endif %}
+                <h2 class="">{{task.name}} <span style="color: {{due_date_color}};">{{ task.due_date_pretty}}</span>
+                    {{LANG[lang].get("at","at")}} <span style="color: {{due_date_color}};">{{ task.due_hour }}</span>
+
+                </h2>
+                {% if task.priority == 'High' %}
+                {% set priorityColor = 'text-danger'  %}
+                {% elif   task.priority == 'Medium' %}
+                {% set priorityColor = 'text-warning'  %}
+                {% else %}
+                {% set priorityColor = 'text-success'  %}
+                {% endif %}
+                <h3 class="ml-3 {{priorityColor}}"><i class="fas fa-flag"></i> {{LANG[lang].get(task.priority,task.priority)}} </h3>
+            </div>
+            <div class="mr-4">
+                <form class="" method="POST" action="{{ url_for('tasks.set_task_progress',tid=task.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                    <select class="form-group pb-0 mb-0" name="status">
+                        <option value="Waiting" {% if task.status == 'Waiting' %} selected {% endif %}>{{LANG[lang].get("Waiting",'Waiting')}}</option>
+                        <option value="In Progress" {% if task.status == 'In Progress' %} selected {% endif %}> {{LANG[lang].get("In Progress",'In Progress')}}</option>
+                        <option value="Done" {% if task.status == 'Done' %} selected {% endif %}>{{LANG[lang].get("Done","Done")}}</option>
+                    </select>
+                    <input style="width: 60px;" name="progress" type="number" max="100" min="0"
+                        value="{{ task.progress }}">
+                    <label for="progress">%</label>
+                    <button class="btn btn-sm btn-primary">Ok</button>
+
+                </form>
+                <form method="POST" action="{{ url_for('tasks.postpone_task',tid=task.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                    <label for="due_date_postpone" style="margin-right: 25px; margin-left: 12px;">{{LANG[lang].get("Postpone","Postpone")}}</label>
+                    <input style="width: 60px; " name="due_date_postpone" type="number" value="0">
+                    <label for="due_date_postpone">d</label>
+                    <button class="btn btn-sm btn-primary">Ok</button>
+
+                </form>
+            </div>
+        </div>
+        <a class="btn btn-sm btn-primary" href="{{ url_for('tasks.edit_task',tid=task.id) }}">
+            {{LANG[lang].get("Edit","Edit")}}
+        </a>
+    </div>
+
+    <div class=" p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3" style="font-size: 1.2em;">
+            {{LANG[lang].get("Assigned to","Assigned to")}} <span class="text-muted">{{task.assigned_user.name}}</span> <br>
+        </div>
+        <div class="mt-2 pl-3" style="font-size: 1.2em;">
+            {{LANG[lang].get("Created by","Created by")}} <span class="text-muted pl-2">{{task.creator.name}}</span>
+            {{LANG[lang].get("at","at")}} <span class="text-muted pl-2">{{task.date_created_pretty}}</span>
+        </div>
+        <div class="mt-2 pl-3" style="font-size: 1.2em;">
+            {{LANG[lang].get("Description","Description")}} <span class="text-muted pl-2">{{task.description}}</span> <br>
+        </div>
+    </div>
+
+
+    <div class=" p-4 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Previous tasks in chain","Previous tasks in chain")}}</span>
+        <button id="addAwaitedTaskBtn" class="btn btn-sm btn-grey">+</button> <br>
+        <form id="addAwaitedTaskForm" method="POST" style="display: none;"
+            action="{{ url_for('tasks.link_task_to_task',waitingTaskId=task.id)}}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+            <select id="addAwaitedTaskSelect" class="form-group" name="awaitedTaskId">
+                {% for t in all_tasks %}
+                <option value="{{  t.id }}">{{ t.name }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-md btn-primary">{{LANG[lang].get("Add","Add")}}</button>
+
+        </form>
+        <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+            <!--Table head-->
+            <thead>
+                <tr class="stylish-color-dark text-white ">
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Due date</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Assigned to</th>
+                    <th>By</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <!--Table head-->
+            <!--Table body-->
+            <tbody>
+                {% for t in task.awaitedTasks %}
+                <tr>
+
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.id}}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.name}}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.due_date}}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.priority}}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.status }}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.progress }}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;"
+                            href="{{ url_for('tasks.task',tid=t.id) }}">{{t.assigned_user.name }}</a>
+                    </td>
+                    <td class="p-0">
+                        <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.creator.name }}</a>
+                    </td>
+
+                    <td class="p-0">
+                        <a style="padding: 15px; overflow: hidden; text-overflow: ellipsis;"
+                            href="{{ url_for('tasks.task',tid=t.id) }}">{{t.description}}</a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!--Table body-->
+        </table>
+    </div>
+
+
+
+
+
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{{url_for('static',filename='js/addons/datatables2.min.js')}}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tablePreview').DataTable({ responsive: true });
+        $('.dataTables_length').addClass('bs-select');
+    });
+</script>
+
+<script>
+
+
+    $('#addAwaitedTaskBtn').click(function (e) {
+        $('#addAwaitedTaskForm').show();
+        $(this).hide()
+    })
+
+    $("#addAwaitedTaskForm").submit(function (e) {
+        if ($("#addAwaitedTaskSelect").val() == null) {
+            e.preventDefault()
+
+        }
+    })
+
+
+</script>
+
+{% endblock scripts %}

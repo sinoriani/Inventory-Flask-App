@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+
+{% block head %}
+<!-- MDBootstrap Datatables  -->
+<link href="{{url_for('static',filename='css/addons/datatables2.min.css')}}" rel="stylesheet">
+{% endblock head %}
+
+{% block content %}
+
+<div class="ml-3 p-2 shadowed2" style=" background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <!--Table-->
+    <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+        <!--Table head-->
+        <thead>
+            <tr class="stylish-color-dark text-white ">
+                <th>#</th>
+                <th>{{LANG[lang].get("Name","Name")}} <i class="ml-2 fas fa-signature"></i></th>
+                <th>{{LANG[lang].get("Due date","Due date")}} <i class="ml-2 fas fa-calendar-alt"></i></th>
+                <th>{{LANG[lang].get("Priority","Priority")}} <i class="ml-2 fas fa-flag"></i></th>
+                <th>{{LANG[lang].get("Status","Status")}} <i class="ml-2 fas fa-compass"></i></th>
+                <th>{{LANG[lang].get("Progress","Progress")}} <i class="ml-2 fas fa-signal"></i></th>
+                <th>{{LANG[lang].get("Assigned to","Assigned to")}} <i class="ml-2 fas fa-user"></i></th>
+                <th>{{LANG[lang].get("By","By")}}<i class="ml-2 fas fa-user"></i> </th>
+                <th>{{LANG[lang].get("Description","Description")}} <i class="ml-2 fas fa-file-alt"></i></th>
+            </tr>
+        </thead>
+        <!--Table head-->
+        <!--Table body-->
+        <tbody>
+            {% for t in tasks %}
+            <tr>
+
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.id}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.name}}</a>
+                </td>
+                <td class="p-0">
+                    {% if t.status != 'Done' and t.due_date < current_date + timedelta(days=2) %}
+                    {% set due_date_color = 'bg-danger text-white' %}
+                    {% elif t.status != 'Done' and  t.due_date <= current_date + timedelta(days=4) %}
+                    {% set due_date_color = 'orange text-white' %}
+
+                    {% endif %}
+                    <a href="{{ url_for('tasks.task',tid=t.id) }}">
+                        <span style="padding: 5px; margin: 10px 2px 10px 10px; border-radius: 5px;"
+                            class="{{due_date_color}}">{{t.due_date_pretty}}</span>
+                        {% if t.due_hour %}
+                        <span style="padding: 5px; margin: 10px 10px 10px 2px; border-radius: 5px;"
+                            class="{{due_date_color}}">{{t.due_hour}}</span>
+                        {% endif %}
+                    </a>
+                </td>
+                <td class="p-0">
+                    {% if t.priority == 'High' %}
+                    {% set priorityColor = 'text-danger'  %}
+                    {% elif   t.priority == 'Medium' %}
+                    {% set priorityColor = 'text-warning'  %}
+                    {% else  %}
+                    {% set priorityColor = 'text-success'  %}
+                    {% endif %}
+                    <a style="padding: 5px; margin: 10px 10px; border-radius: 5px;"
+                        href="{{ url_for('tasks.task',tid=t.id) }}">
+                        <span class="{{priorityColor}}"><i class="mr-2 fas fa-flag"></i>
+                        </span>{{LANG[lang].get(t.priority,t.priority)}}
+                    </a>
+                </td>
+                <td class="p-0">
+                    {% if t.status == 'Waiting' %}
+                    {% set statusColor = 'text-white warning-color'  %}
+                    {% elif t.status == 'In Progress' %}
+                    {% set statusColor = 'text-white info-color'  %}
+                    {% else %}
+                    {% set statusColor = 'text-white success-color'  %}
+                    {% endif %}
+                    <a style="padding: 5px; margin: 10px 10px; border-radius: 5px;" class="{{statusColor}}"
+                        href="{{ url_for('tasks.task',tid=t.id) }}">{{LANG[lang].get(t.status,t.status)}}</a>
+                </td>
+                <td class="p-0">
+                    {% if t.progress <= 50 %}
+                    {% set progressColor = 'text-danger'  %}
+                    {% elif t.progress <= 75 %}
+                    {% set progressColor = 'text-warning '  %}
+                    {% else %}
+                    {% set progressColor = 'text-success '  %}
+                    {% endif %}
+                    <p style="padding: 15px 25px; " class="m-0 text-right {{progressColor}}">
+                        {{t.progress }} %
+                    </p>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.assigned_user.name }}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('tasks.task',tid=t.id) }}">{{t.creator.name }}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px; overflow: hidden; text-overflow: ellipsis;"
+                        href="{{ url_for('tasks.task',tid=t.id) }}">{{t.description}}</a>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+        <!--Table body-->
+    </table>
+    <!--Table-->
+</div>
+{% endblock content %}
+
+
+{% block scripts %}
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{{url_for('static',filename='js/addons/datatables2.min.js')}}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tablePreview').DataTable({
+            responsive: true,
+            
+        });
+        $('.dataTables_length').addClass('bs-select');
+    });
+</script>
+{% endblock scripts %}

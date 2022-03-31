@@ -1,0 +1,129 @@
+
+{% extends "layout.html" %}
+
+
+{% block content %}
+<form action="" method="POST" class="ml-3 pb-3 shadowed2" style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    {{ form.hidden_tag() }}
+    <div class="mb-4 p-3 d-flex justify-content-between" style="border-bottom: 1px solid rgba(177, 177, 177, 0.616);">
+        <legend class="ml-2 pt-2" style="font-weight: 100; " >{{LANG[lang].get("Add a company","Add a company")}}</legend>
+        <!-- <button type="submit" style="width: 180px;" class=" rounded-border btn stripe-indigo-bg text-white ">Add product</button> -->
+    </div>
+    <div class="p-3 m-auto w-60-lg " >
+        <h4>{{LANG[lang].get("Company information","Company information")}}</h4>
+        <div class="row ml-2 p-0" >
+            <div class=" col-lg-6 form-group">
+                {{ form.company_name.label }}
+                {% if form.company_name.errors %}
+                {{ form.company_name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.company_name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.company_name(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="col-lg-6 form-group">
+                {{ form.company_matricule.label }}
+                {% if form.company_matricule.errors %}
+                {{ form.company_matricule(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.company_matricule.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.company_matricule(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+        </div>
+
+
+        <h4>{{LANG[lang].get("Contact information","Contact information")}}</h4>
+
+        <div class="ml-2 p-0 row">
+
+            <div class="col-lg-4 pl-2 form-group">
+                {{ form.contact_name.label }}
+                {% if form.contact_name.errors %}
+                {{ form.contact_name(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.contact_name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.contact_name(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class=" col-lg-4  form-group">
+                {{ form.contact_surname.label }}
+                {% if form.contact_surname.errors %}
+                {{ form.contact_surname(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.contact_surname.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.contact_surname(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class=" col-lg-4  form-group">
+                {{ form.contact_phone.label }}
+                {% if form.contact_phone.errors %}
+                {{ form.contact_phone(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.contact_phone.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.contact_phone(placeholder="",class="rounded-border form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="ml-3 form-group">
+            {{ form.contact_email.label }}
+            {% if form.contact_email.errors %}
+            {{ form.contact_email(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.contact_email.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.contact_email(placeholder="",class="rounded-border form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        
+        <div class="ml-3 form-group">
+            {{ form.company_remarks.label }}
+            {% if form.company_remarks.errors %}
+            {{ form.company_remarks(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.company_remarks.errors %}
+                <span>{{ error }}</span>
+                {% endfor %} 
+            </div>
+            {% else %}
+            {{ form.company_remarks(placeholder="",class="rounded-border form-control form-control-lg") }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class=" w-100 d-flex justify-content-end">
+
+        <button type="submit" style="width: 180px; margin: 0 20px;" class=" rounded-border btn stripe-indigo-bg text-white ">{{LANG[lang].get("Confirm","Confirm")}}</button>
+    </div>
+</form>
+{% endblock content %}
+
+
+{% block scripts %}
+
+{% endblock scripts %}

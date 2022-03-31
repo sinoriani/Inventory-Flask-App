@@ -1,0 +1,495 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock head %}
+
+
+
+{% block content %}
+<div class=" ml-2 mr-3 shadowed2" style="background-color: #F8FAFD; border-radius: 5px;">
+    <div class="p-2  mb-0 border-bottom">
+        <div class="d-flex justify-content-between">
+
+            <h2 class="">
+                {{affair.name}}
+                <span>{{ LANG[lang].get("Invoiced","Invoiced") if affair.invoice else LANG[lang].get("Non invoiced","Non invoiced") }}</span>
+                <div class="text-muted">    {{ LANG[lang].get("Created at","Created at")+ ' ' + affair.date_created_pretty }}</div>
+            </h2>
+            <h3 class="rounded-border bordered p-2 indigo lighten-5">
+                {{ LANG[lang].get("Total","Total") }} : <span class="red-text" style="font-size:1em;" id="total"></span> DT
+            </h3>
+            <div class="mr-4">
+                <form method="POST" action="{{ url_for('affairs.set_affair_status',affair_id=affair.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                    {% if affair.status != 'Done' %}
+                    <select class="form-group" name="status">
+                        <option value="Waiting" {% if affair.status == 'Waiting' %} selected {% endif %}>
+                            {{LANG[lang].get('Waiting','Waiting')}}</option>
+                        <option value="In Progress" {% if affair.status == 'In Progress' %} selected {% endif %}>
+                            {{LANG[lang].get('In Progress','In Progress')}}</option>
+                        <option value="Done" {% if affair.status == 'Done' %} selected {% endif %}>
+                            {{LANG[lang].get('Done','Done')}}</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary">Ok</button>
+                    {% else %}
+                    <input type="text" class="rounded-border form-control form-control-lg " style="width: 100px;"
+                        value="{{LANG[lang].get('Done','Done')}}" disabled>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        <div class="dropdown">
+            <a class="btn btn-sm btn-primary" href=" {{url_for('affairs.edit_affair',affair_id=affair.id)}} ">
+                {{LANG[lang].get("Edit","Edit")}}
+            </a>
+            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{LANG[lang].get("Add Operation","Add Operation")}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {% if affair.type == 'Sale' %}
+                <a class="dropdown-item"
+                    href=" {{url_for('affairs.add_affair',type_='Sale',parent_id=affair.id)}}">{{LANG[lang].get("Sale","Sale")}}</a>
+                {% elif affair.type == "Purchase" %}
+                <a class="dropdown-item"
+                    href=" {{url_for('affairs.add_affair',type_='Purchase',parent_id=affair.id)}}">{{LANG[lang].get("Purchase","Purchase")}}</a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Amount","Amount")}}</span> <br>
+            <span class="red-text amount" style="font-weight: bold; font-size: 1.2em;">{{affair.amount  if affair.amount else "-"}} DT</span>
+        </div>
+        <div class="mt-2 pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Type","Type")}}</span> <br>
+            <span class="indigo-text">{{LANG[lang].get(affair.type,affair.type)}} </span>
+        </div>
+        <div class="mt-2 pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Close date","Close date")}}</span> <br>
+            <span class="indigo-text">
+                {% if affair.close_date %}
+                {{affair.close_date.day  }}/{{affair.close_date.month  }}/{{affair.close_date.year  }}
+                {% else %}
+                -
+                {% endif %}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Agent in charge","Agent in charge")}}</span> <br>
+            <span class="indigo-text">{{affair.responsible_user.name}}</span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Origin","Origin")}}</span> <br>
+            <span class="indigo-text">{{affair.origin if affair.origin else "-"}} </span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Selling probability","Selling probability")}}</span> <br>
+            <span class="indigo-text">{{affair.probability if affair.probability else "-"}} %</span>
+        </div>
+        
+
+    </div>
+
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Description","Description")}}</span> <br>
+            <span class="indigo-text">{{affair.description}}</span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Company","Company")}}</span> <br>
+            <span class="indigo-text">{{affair.company.name if affair.company else "-"}} </span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Date created","Date created")}}</span> <br>
+            <span class="indigo-text">{{affair.date_created_pretty if affair.date_created_pretty else "-"}} </span>
+        </div>
+        
+
+    </div>
+
+    {% if dbname == "chelli" %}
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Plate","Plate")}}</span> <br>
+            <span class="indigo-text">{{affair.matricule if affair.matricule else '-'}}</span>
+        </div>
+
+    </div>
+    {% endif %}
+
+
+    <div class="p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pb-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Products","Products")}}</span>
+            {% if affair.status != 'Done'  %}
+            <button id="{{ affair.id }}" class="addcompanyBtn ml-2 btn btn-sm btn-grey">+</button> <br>
+            {% endif %}
+            <form id="addcompanyForm-{{affair.id}}" class="addcompanyForm" method="POST" style="display: none;"
+                action=" {{url_for('affairs.link_product_to_affair',affair_id=affair.id)}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                <div class="row">
+                    {% if affair.type == 'Purchase' %}
+                    <div class="ml-3">
+                        <select id="companySelect" class="form-group" name="company_id">
+                            {% if affair.products != [] %}
+                            <option value="{{  affair.company.id }}">{{ affair.company.name }}</option>
+                            {% else %}
+                            {% for company in all_companies %}
+                            <option value="{{  company.id }}">{{ company.name }}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="ml-3">
+                        <div class="form-group" style="width: 600px; list-style-type: none;">
+
+                            <ul id="productsCheckbox" style="height:180px; overflow-y:scroll;list-style-type: none;"
+                                class="productsCheckbox rounded-border form-control form-control-lg" id="">
+
+                                </li>
+
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <button class="btn btn-md btn-primary">{{LANG[lang].get("Add","Add")}}</button>
+
+                    </div>
+                </div>
+
+
+
+            </form>
+            <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+                <!--Table head-->
+                <thead>
+                    <tr class="stylish-color-dark text-white ">
+                        <th>{{LANG[lang].get("Name","Name")}}</th>
+                        <th>{{LANG[lang].get("Quantity","Quantity")}}</th>
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+                    {% for  p in affair.products %}
+                    <tr>
+
+
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.name}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.quantity}}
+                                {{ p.unity}}</a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <!--Table body-->
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+{% for child in affair.children_affairs %}
+<div class=" ml-2 mt-4 mb-2 mr-3 shadowed2" style="background-color: #F8FAFD; border-radius: 5px;">
+    <div class="p-2  mb-0 border-bottom">
+        <div class="d-flex justify-content-between">
+
+            <h2 class="">
+                {{child.name}}
+                <span>{{ LANG[lang].get("Invoiced","Invoiced") if child.invoice else LANG[lang].get("Non invoiced","Non invoiced") }}</span>
+            </h2>
+            <div class="mr-4">
+                <form method="POST" action="{{ url_for('affairs.set_affair_status',affair_id=child.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                    {% if child.status != 'Done' %}
+                    <select class="form-group" name="status">
+                        <option value="Waiting" {% if child.status == 'Waiting' %} selected {% endif %}>
+                            {{LANG[lang].get('Waiting','Waiting')}}</option>
+                        <option value="In Progress" {% if child.status == 'In Progress' %} selected {% endif %}>
+                            {{LANG[lang].get('In Progress','In Progress')}}</option>
+                        <option value="Done" {% if child.status == 'Done' %} selected {% endif %}>
+                            {{LANG[lang].get('Done','Done')}}</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary">Ok</button>
+                    {% else %}
+                    <input type="text" class="rounded-border form-control form-control-lg " style="width: 100px;"
+                        value="Done" disabled>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        <a class="btn btn-sm btn-primary" href=" {{url_for('affairs.edit_affair',affair_id=child.id)}} ">
+            {{LANG[lang].get("Edit","Edit")}}
+        </a>
+
+
+    </div>
+
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Amount","Amount")}}</span> <br>
+            <span class="red-text amount" style="font-weight: bold; font-size: 1.2em;">{{child.amount  if child.amount else "-"}} DT</span>
+        </div>
+        <div class="mt-2 pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Type","Type")}}</span> <br>
+            <span class="indigo-text">{{LANG[lang].get(child.type,child.type)}} </span>
+        </div>
+        <div class="mt-2 pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Close date","Close date")}}</span> <br>
+            <span class="indigo-text">
+                {% if child.close_date %}
+                {{child.close_date.day  }}/{{child.close_date.month  }}/{{child.close_date.year  }}
+                {% else %}
+                -
+                {% endif %}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Agent in charge","Agent in charge")}}</span> <br>
+            <span class="indigo-text">{{child.responsible_user.name}}</span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Origin","Origin")}}</span> <br>
+            <span class="indigo-text">{{child.origin if child.origin else "-"}} </span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Selling probability","Selling probability")}}</span> <br>
+            <span class="indigo-text">{{child.probability if child.probability else "-"}} %</span>
+        </div>
+        
+
+    </div>
+
+
+
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Description","Description")}}</span> <br>
+            <span class="indigo-text">{{child.description}}</span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Company","Company")}}</span> <br>
+            <span class="indigo-text">{{child.company.name if child.company else "-"}} </span>
+        </div>
+        <div class="mt-2  pl-3 col-lg-4 border-left">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Date created","Date created")}}</span> <br>
+            <span class="indigo-text">{{child.date_created_pretty if child.date_created_pretty else "-"}} </span>
+        </div>
+        
+
+    </div>
+
+    {% if dbname == "chelli" %}
+    <div class="row ml-0 p-2 text-center mr-0  border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pl-3 col-lg-4">
+            <span class="text-muted"
+                style="font-size: 1.2em;">{{LANG[lang].get("Plate","Plate")}}</span> <br>
+            <span class="indigo-text">{{child.matricule if child.matricule else '-'}}</span>
+        </div>
+
+    </div>
+    {% endif %}
+
+    <div class="p-2 border-bottom" style="font-size: 1.3em; background-color: #eef0f8;">
+        <div class="mt-2 pb-2 pl-3">
+            <span class="text-muted" style="font-size: 1.2em;">{{LANG[lang].get("Products","Products")}}</span>
+            {% if child.status != 'Done'  %}
+            <button id="{{ child.id }}" class="addcompanyBtn ml-2 btn btn-sm btn-grey">+</button> <br>
+            {% endif %}
+            <form id="addcompanyForm-{{ child.id }}" class="addcompanyForm" method="POST" style="display: none;"
+                action=" {{url_for('affairs.link_product_to_affair',affair_id=child.id)}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                <div class="row">
+                    {% if child.type == 'Purchase' %}
+                    <div class="ml-3">
+                        <select id="companySelect" class="form-group" name="company_id">
+                            {% if child.products != [] %}
+                            <option value="{{  child.company.id }}">{{ child.company.name }}</option>
+                            {% else %}
+                            {% for company in all_companies %}
+                            <option value="{{  company.id }}">{{ company.name }}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="ml-3">
+                        <div class="form-group" style="width: 600px; list-style-type: none;">
+
+                            <ul id="productsCheckbox" style="height:180px; overflow-y:scroll;list-style-type: none;"
+                                class="productsCheckbox rounded-border form-control form-control-lg" id="">
+
+                                </li>
+
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <button class="btn btn-md btn-primary">{{LANG[lang].get("Add","Add")}}</button>
+
+                    </div>
+                </div>
+
+
+
+            </form>
+            <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+                <!--Table head-->
+                <thead>
+                    <tr class="stylish-color-dark text-white ">
+                        <th>{{LANG[lang].get("Name","Name")}}</th>
+                        <th>{{LANG[lang].get("Quantity","Quantity")}}</th>
+                    </tr>
+                </thead>
+                <!--Table head-->
+                <!--Table body-->
+                <tbody>
+                    {% for  p in child.products %}
+                    <tr>
+
+
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.name}}</a>
+                        </td>
+                        <td class="p-0">
+                            <a style="padding: 15px;" href="{{ url_for('inventory.product',pid=p.id) }}">{{p.quantity}}
+                                {{ p.unity}}</a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <!--Table body-->
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+{% endfor %}
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+    $('.addcompanyBtn').click(function (e) {
+        let id = $(this).attr('id');
+        $('#addcompanyForm-' + id).show();
+        $($(this).parent().children()[2]).show(); // the form
+        $(this).hide()
+    })
+
+    $(".addcompanyForm").submit(function (e) {
+        /*if ($("#addcompanieselect").val() == null) {
+            e.preventDefault()
+
+        }*/
+    })
+    var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    })
+
+
+    function getData(companySelect) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "{{ url_for('inventory.get_products_for_company') }}",
+            data: JSON.stringify({
+                "company_id": companySelect.val()
+            }),
+            success: function (data) {
+                $('.productsCheckbox').empty()
+                for (d of data) {
+                    let li = $(document.createElement('li'));
+                    let label = $(document.createElement('label')).css('margin-left', '4px').attr('for', 'products_' + d[0]).html(d[1])
+                    let input = $(document.createElement('input')).attr({
+                        id: 'products_' + d[0],
+                        name: 'products',
+                        value: d[0],
+                        type: 'hidden'
+                    })
+                    $(li).append(input);
+                    $(li).append(label);
+                    $('.productsCheckbox').append(li);
+
+                }
+                $(".productsCheckbox").children().each(function () {
+                    let id = $(this).children()[0].id.split('_')[1]
+                    let input = $(document.createElement('input')).attr({
+                        id: 'quantity_' + id,
+                        name: 'quantity',
+                        value: 0,
+                        class: 'quantityInput',
+                        type: 'number',
+                        style: 'width:70px; margin-left:5px;',
+                        step:"0.01"
+                    })
+                    $(this).prepend(input)
+                })
+                $(".quantityInput").change(function () {
+                    let quantity = $(this).val()
+                    let children = $(this).parent().children()
+                    let product_id = $(children[1]).val().split('_')[0]
+                    $(this).parent().children().val(product_id.toString() + '_' + quantity.toString())
+                    $(this).val(quantity)
+                })
+            },
+            contentType: "application/json; charset=utf-8"
+        });
+    }
+
+    getData($("#companySelect"))
+
+    $("#companySelect").change(function () {
+        getData($(this))
+    })
+
+
+    let sum = 0;
+    $(".amount").each(function(){
+        let text = $(this).text();
+        if( !text.includes("-")){
+            sum += parseFloat( text.substring(0, text.indexOf(" DT") ) )
+        }
+    })
+    $("#total").text(sum)
+
+</script>
+{% endblock scripts %}

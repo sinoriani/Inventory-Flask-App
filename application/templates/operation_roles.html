@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="ml-3 p-4 shadowed2" style=" background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <div class="mb-2 border-bottom d-flex">
+        <h4 class="mt-1">{{LANG[lang].get("Roles","Roles")}}</h4>
+        <button id="addRoleBtn" class="btn btn-sm btn-grey">+</button>
+        <form id="addRoleForm" class="ml-3 " style="display: none;" method="POST"
+            action="{{ url_for('users.add_role')  }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="role" id="" style="width: 150px;" class="form-group">
+            <button type="submit" class="btn btn-sm btn-primary"> {{LANG[lang].get("Add new role","Add new role")}}</button>
+        </form>
+    </div>
+    {% for role,operations in operation_roles.items() %}
+    <div class="mb-2 mt-2 border-bottom" style="height: 250px;">
+        <h5>{{ role}}</h5>
+        {% if role != 'Admin' %}
+        <form method="POST" action="{{ url_for('users.link_operation_to_role',role=role)  }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="operation" id="" class="browser-default custom-select" style="width: 250px;">
+                {% for available_op in operations['available'] %}
+                <option class="custonOption {{available_op[1]}}" value="{{ available_op[0] }}">{{LANG[lang].get(available_op[0],available_op[0])}}
+                </option>
+                {%  endfor %}
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">+</button>
+        </form>
+        {% endif %}
+        <div class="{% if role == 'Admin' %} mt-4 {% else %} mt-2 {% endif %} d-flex flex-column flex-wrap" style="height: 150px;">
+            {% for op in operations['assigned'] %}
+            <div class="mb-1 {{op[1]}} d-flex ">
+                {% if role != 'Admin' %}
+                <button type="button" class="btn bg-purple btn-sm p-1 m-0 mr-2" data-toggle="modal"
+                data-target="#deleteModal-{{ op[0].replace(' ','') }}">X</button>
+                <!-- Modal -->
+                <div class="modal fade" id="deleteModal-{{ op[0].replace(' ','') }}" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">
+                                    {{LANG[lang].get("Delete","Delete")}}?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">{{LANG[lang].get("Cancel","Cancel")}}</button>
+                                <form
+                                    action="{{ url_for('users.remove_operation_from_role',role=role,  operation=op[0]) }}"
+                                    method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input class="btn btn-danger" type="submit"
+                                        value="{{LANG[lang].get('Delete','Delete')}}">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div><i class="mr-2 fas fa-suitcase-rolling"></i> {{LANG[lang].get(op[0],op[0])}} </div>
+                
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('#addRoleBtn').click(function (e) {
+        $('#addRoleForm').show();
+        $(this).hide()
+    })
+</script>
+{% endblock scripts %}

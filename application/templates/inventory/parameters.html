@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<div class="ml-3 pb-3 shadowed2 row" style="background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <div class="col-lg-6 mt-2">
+        <h4 >{{LANG[lang].get("Families","Families")}}  <a href="{{url_for('inventory.add_family')}}" class="btn btn-sm btn-primary">+</a> </h4>
+        {% for f in families %}
+        <div>
+            <div>{{f[0]}}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-lg-6 mt-2 border-left">
+        <h4 >{{LANG[lang].get("Tax categories","Tax categories")}} <a href="{{url_for('inventory.add_tax_category')}}" class="btn btn-sm btn-primary">+</a> </h4>
+        {% for t in tax_categories %}
+        <div>
+            <form method="POST" action="{{url_for('inventory.edit_tax',name=t[0])}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token()}}">
+                <label for="tax">{{t[0]}} ({{t[1]}} %)</label>
+                <input type="number" style="width: 56px;" name="tax" step="0.01" value={{t[1]}}"> 
+                <input type="submit" value="{{LANG[lang].get('Update','Update')}}">
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}
+
+
+{% block scripts %}
+
+{% endblock scripts %}

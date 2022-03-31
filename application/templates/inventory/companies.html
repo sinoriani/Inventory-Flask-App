@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+
+{% block head %}
+<!-- MDBootstrap Datatables  -->
+<link href="{{url_for('static',filename='css/addons/datatables2.min.css')}}" rel="stylesheet">
+{% endblock head %}
+
+{% block content %}
+
+<div class="ml-3 p-2 shadowed2" style=" background-color: rgb(245, 245, 245); border-radius: 5px;">
+    <!--Table-->
+    <table id="tablePreview" class="table table-hover table-responsive-lg table-striped">
+        <!--Table head-->
+        <thead>
+            <tr  class="stylish-color-dark text-white " > 
+                <th >{{LANG[lang].get("Company name","Company name")}} <i class="ml-2 fas fa-signature"></i></th>
+                <th >{{LANG[lang].get("Contact fullname","Contact name")}} <i class="ml-2 fas fa-signature"></i></th>
+                <th >{{LANG[lang].get("Contact phone number","Contact number")}} <i class="ml-2 fas fa-phone"></i></th>
+                <th >{{LANG[lang].get("Contact email","Contact email")}}<i class="ml-2 fas fa-envelope"></i></th>
+            </tr>
+        </thead>
+        <!--Table head-->
+        <!--Table body-->
+        <tbody>
+            {% for s in companies %}
+            <tr>
+                
+
+                <td class="p-0">
+                    <a style="padding: 15px;font-weight: bold;" href="{{ url_for('inventory.company',sid=s.id) }}">{{s.name}} </a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.company',sid=s.id) }}">{{s.contacts[0].name}} {{s.contacts[0].surname}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.company',sid=s.id) }}">{{s.contacts[0].numsTel[0]}}</a>
+                </td>
+                <td class="p-0">
+                    <a style="padding: 15px;" href="{{ url_for('inventory.company',sid=s.id) }}">{{s.contacts[0].email}}</a>
+                </td>
+               
+            </tr>
+            {% endfor %}
+        </tbody>
+        <!--Table body-->
+    </table>
+    <!--Table-->
+</div>
+{% endblock content %}
+
+
+{% block scripts %}
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="{{url_for('static',filename='js/addons/datatables2.min.js')}}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tablePreview').DataTable({ responsive: true });
+        $('.dataTables_length').addClass('bs-select');
+    });
+</script>
+{% endblock scripts %}

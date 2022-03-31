@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class=" w-50-lg ml-auto mr-auto flex-column  d-flex  justify-content-center align-items-center " style="font-size: 1em; margin: auto; height: 90vh;">
+    <h3 class="mb-4 text-center  stripe-indigo-text" style="font-weight: bold;">Log In
+        {{ section }}</h3>
+    <form method="POST" action="" class="white shadowed w-100  " style="padding: 40px 40px;">
+        {{ form.hidden_tag() }}
+        <legend class="mb-4 " style="font-weight: 100;" > Sign in to your account
+                {{ section }}</legend>
+        <div class="form-group">
+            {{ form.username_email.label }}
+            {% if form.username_email.errors %}
+            {{ form.username_email(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.username_email.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.username_email(placeholder="",class="rounded-border form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.password.label }}
+            {% if form.password.errors %}
+            {{ form.password(placeholder="",class="rounded-border form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+                {% for error in form.password.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.password(placeholder="",class="rounded-border form-control form-control-lg") }}
+            {% endif %}
+        </div>
+        <div class="form-check stripe-indigo-text ">
+            {{ form.remember(class="form-check-input") }}
+            {{ form.remember.label(class="form-check-label ml-1") }}
+        </div>
+        <button type="submit" class="mt-4 mb-3 rounded-border btn stripe-indigo-bg text-white btn-lg btn-block">Login</button>
+        <small class=" ">
+            <a class="stripe-indigo-text" href="{{ url_for('users.reset_request') }}">Forgot password?</a>
+        </small>
+    </form>
+</div>
+
+
+{% endblock content %}
